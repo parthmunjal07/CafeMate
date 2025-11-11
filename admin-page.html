@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CafeMate - Admin Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f7fa;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* Header */
+      header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .header-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .admin-details {
+        text-align: right;
+        font-size: 0.95rem;
+      }
+
+      .admin-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+
+      .logout-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background: white;
+        color: #667eea;
+      }
+
+      /* Main Content */
+      .main-content {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .section {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #667eea;
+      }
+
+      .section-header h2 {
+        color: #333;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-header-icon {
+        font-size: 1.8rem;
+      }
+
+      .stats-badge {
+        background: #667eea;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      /* Orders Section */
+      .orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .order-card {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 18px;
+        transition: all 0.3s ease;
+        border-left: 5px solid #667eea;
+      }
+
+      .order-card:hover {
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.15);
+        border-color: #667eea;
+      }
+
+      .order-card.preparing {
+        border-left-color: #f39c12;
+        background: #fffaf0;
+      }
+
+      .order-card.ready {
+        border-left-color: #2ecc71;
+        background: #f0fff4;
+      }
+
+      .order-card.completed {
+        border-left-color: #95a5a6;
+        background: #f8f9fa;
+        opacity: 0.7;
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 12px;
+      }
+
+      .order-id {
+        font-weight: 700;
+        color: #333;
+        font-size: 1.1rem;
+      }
+
+      .order-status {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .order-status.pending {
+        background: #ffeaa7;
+        color: #d63031;
+      }
+
+      .order-status.preparing {
+        background: #fab1a0;
+        color: #d63031;
+      }
+
+      .order-status.ready {
+        background: #74b9ff;
+        color: #0984e3;
+      }
+
+      .order-status.completed {
+        background: #81ecec;
+        color: #00b894;
+      }
+
+      .order-items {
+        background: white;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        color: #555;
+        max-height: 100px;
+        overflow-y: auto;
+      }
+
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .order-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .order-item-name {
+        font-weight: 500;
+      }
+
+      .order-item-qty {
+        color: #667eea;
+        font-weight: 600;
+      }
+
+      .order-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 12px;
+        padding: 8px;
+        background: white;
+        border-radius: 6px;
+      }
+
+      .order-student {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .order-time {
+        color: #999;
+      }
+
+      .order-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .action-btn {
+        flex: 1;
+        padding: 10px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-ready {
+        background: #f39c12;
+        color: white;
+      }
+
+      .btn-ready:hover {
+        background: #e67e22;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(243, 156, 18, 0.3);
+      }
+
+      .btn-ready:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .btn-done {
+        background: #2ecc71;
+        color: white;
+      }
+
+      .btn-done:hover {
+        background: #27ae60;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+      }
+
+      .btn-done:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .btn-cancel {
+        background: #e74c3c;
+        color: white;
+        flex: 0.8;
+      }
+
+      .btn-cancel:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+      }
+
+      /* Stock Section */
+      .stock-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .stock-item {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .stock-item:hover {
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.15);
+        border-color: #667eea;
+      }
+
+      .stock-item.finished {
+        background: #ffebee;
+        border-color: #ef5350;
+        opacity: 0.8;
+      }
+
+      .stock-item-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+      }
+
+      .stock-item-emoji {
+        font-size: 1.8rem;
+      }
+
+      .stock-item-details {
+        flex: 1;
+      }
+
+      .stock-item-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+      }
+
+      .stock-item-category {
+        font-size: 0.85rem;
+        color: #999;
+      }
+
+      .stock-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .stock-count {
+        background: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: 2px solid #667eea;
+        text-align: center;
+        min-width: 70px;
+      }
+
+      .stock-count-number {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      .stock-count-label {
+        font-size: 0.75rem;
+        color: #999;
+        text-transform: uppercase;
+      }
+
+      .stock-toggle {
+        position: relative;
+        width: 60px;
+        height: 32px;
+      }
+
+      .toggle-checkbox {
+        display: none;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #2ecc71;
+        border-radius: 32px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        padding: 2px;
+      }
+
+      .toggle-checkbox:checked + .toggle-slider {
+        background-color: #e74c3c;
+      }
+
+      .toggle-knob {
+        background-color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        transition: transform 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .toggle-checkbox:checked + .toggle-slider .toggle-knob {
+        transform: translateX(28px);
+      }
+
+      .toggle-status {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 10px;
+        min-width: 70px;
+        text-align: center;
+      }
+
+      .status-available {
+        color: #2ecc71;
+      }
+
+      .status-finished {
+        color: #e74c3c;
+      }
+
+      /* Scrollbar Styling */
+      .orders-list::-webkit-scrollbar,
+      .stock-list::-webkit-scrollbar,
+      .order-items::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .orders-list::-webkit-scrollbar-track,
+      .stock-list::-webkit-scrollbar-track,
+      .order-items::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .orders-list::-webkit-scrollbar-thumb,
+      .stock-list::-webkit-scrollbar-thumb,
+      .order-items::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
+      }
+
+      .orders-list::-webkit-scrollbar-thumb:hover,
+      .stock-list::-webkit-scrollbar-thumb:hover,
+      .order-items::-webkit-scrollbar-thumb:hover {
+        background: #764ba2;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+      }
+
+      .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .empty-state-text {
+        font-size: 1rem;
+        color: #666;
+      }
+
+      /* Notification */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4caf50;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+        z-index: 1000;
+      }
+
+      .notification.error {
+        background: #e74c3c;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+
+      /* Stats Section */
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid #667eea;
+      }
+
+      .stat-card.pending {
+        border-left-color: #f39c12;
+      }
+
+      .stat-card.ready {
+        border-left-color: #2ecc71;
+      }
+
+      .stat-card.completed {
+        border-left-color: #3498db;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #999;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .header-info {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .stats-container {
+          grid-template-columns: 1fr;
+        }
+
+        .stock-info {
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <h1>🍽️ Admin Dashboard</h1>
+      <div class="header-info">
+        <div class="admin-details">
+          <div class="admin-name" id="adminName">Admin User</div>
+          <div style="font-size: 0.85rem; opacity: 0.9" id="adminEmail">
+            admin@canteen.com
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Stats Section -->
+      <div class="stats-container">
+        <div class="stat-card pending">
+          <div class="stat-number" id="statPending">0</div>
+          <div class="stat-label">Pending Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statPreparing">0</div>
+          <div class="stat-label">Preparing</div>
+        </div>
+        <div class="stat-card ready">
+          <div class="stat-number" id="statReady">0</div>
+          <div class="stat-label">Ready</div>
+        </div>
+        <div class="stat-card completed">
+          <div class="stat-number" id="statCompleted">0</div>
+          <div class="stat-label">Completed Today</div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Orders Section -->
+        <div class="section">
+          <div class="section-header">
+            <h2><span class="section-header-icon">📋</span> Order Queue</h2>
+            <div class="stats-badge" id="ordersCount">0 Orders</div>
+          </div>
+          <div class="orders-list" id="ordersList">
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <div class="empty-state-text">No orders yet</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stock Section -->
+        <div class="section">
+          <div class="section-header">
+            <h2>
+              <span class="section-header-icon">📦</span> Stock Management
+            </h2>
+            <div class="stats-badge" id="stockCount">0 Items</div>
+          </div>
+          <div class="stock-list" id="stockList">
+            <!-- Stock items will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Data Management
+      let orders = [];
+      let menuItems = [];
+      let autoIncrementOrderId = 1001;
+
+      // Menu Items Data
+      const initialMenuItems = [
+        { id: 1, name: "Samosa", emoji: "", category: "Ready to Eat", stock: 25, finished: false },
+        { id: 2, name: "Chips", emoji: "🍟", category: "Ready to Eat", stock: 30, finished: false },
+        { id: 3, name: "Patties", emoji: "🥪", category: "Ready to Eat", stock: 15, finished: false },
+        { id: 4, name: "Coffee", emoji: "🥛", category: "Ready to Eat", stock: 8, finished: false },
+        { id: 5, name: "Chole Bhature", emoji: "🍛", category: "Cooked Food", stock: 20, finished: false },
+        { id: 6, name: "Pav Bhaji", emoji: "🍛", category: "Cooked Food", stock: 18, finished: false },
+        { id: 7, name: "Pasta", emoji: "🍝", category: "Cooked Food", stock: 12, finished: false },
+        { id: 8, name: "Chowmein", emoji: "🍛", category: "Cooked Food", stock: 5, finished: false },
+      ];
+
+      // Initialize
+      function init() {
+        loadAdminInfo();
+        menuItems = JSON.parse(JSON.stringify(initialMenuItems));
+        loadDataFromStorage();
+
+        // If there are no saved orders, load a small mock queue (2-3 orders)
+        if (!orders || orders.length === 0) {
+          loadMockQueue();
+        }
+
+        renderStock();
+        renderOrders();
+        updateStats();
+      }
+
+      function loadMockQueue() {
+        const sampleOrders = [
+          {
+            orderId: autoIncrementOrderId++,
+            studentId: "CSE2024001",
+            studentName: "Rahul Singh",
+            items: [
+              { name: "Samosa", price: 36, quantity: 3 },
+              { name: "Pav Bhaji", price: 50, quantity: 1 },
+              { name: "Chowmein", price: 30, quantity: 1 },
+            ],
+            status: "pending",
+            totalPrice: 470,
+            orderTime: new Date(),
+            preparedTime: null,
+            readyTime: null,
+          },
+          {
+            orderId: autoIncrementOrderId++,
+            studentId: "CSE2024002",
+            studentName: "Priya Sharma",
+            items: [
+              { name: "Coffee", price: 15, quantity: 2 },
+              { name: "Pasta", price: 50, quantity: 3 },
+            ],
+            status: "preparing",
+            totalPrice: 250,
+            orderTime: new Date(Date.now() - 2 * 60000),
+            preparedTime: new Date(Date.now() - 1 * 60000),
+            readyTime: null,
+          },
+          {
+            orderId: autoIncrementOrderId++,
+            studentId: "CSE2024003",
+            studentName: "Ankit Mehta",
+            items: [{ name: "Veg Fried Rice", price: 120, quantity: 2 }],
+            status: "ready",
+            totalPrice: 240,
+            orderTime: new Date(Date.now() - 10 * 60000),
+            preparedTime: new Date(Date.now() - 6 * 60000),
+            readyTime: new Date(Date.now() - 1 * 60000),
+          },
+        ];
+
+        orders = sampleOrders;
+        saveDataToStorage();
+      }
+
+      // Load Admin Info
+      function loadAdminInfo() {
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+        if (currentUser.userId) {
+          document.getElementById("adminName").textContent = currentUser.userId;
+          document.getElementById("adminEmail").textContent = currentUser.userEmail;
+        }
+      }
+
+      // Render Orders
+      function renderOrders() {
+        const ordersList = document.getElementById("ordersList");
+        ordersList.innerHTML = "";
+
+        if (!orders || orders.length === 0) {
+          ordersList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">No orders yet</div>
+                    </div>
+                `;
+          document.getElementById("ordersCount").textContent = "0 Orders";
+          return;
+        }
+
+        // Sort by status (pending -> preparing -> ready -> completed)
+        const statusOrder = { pending: 0, preparing: 1, ready: 2, completed: 3 };
+        const sortedOrders = [...orders].sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+
+        sortedOrders.forEach((order) => {
+          const orderCard = createOrderCard(order);
+          ordersList.appendChild(orderCard);
+        });
+
+        document.getElementById("ordersCount").textContent = `${orders.length} Order${orders.length !== 1 ? "s" : ""}`;
+      }
+
+      // Create Order Card
+      function createOrderCard(order) {
+        const div = document.createElement("div");
+        div.className = `order-card ${order.status}`;
+
+        const itemsHTML = order.items
+          .map(
+            (item) => `
+                <div class="order-item">
+                    <span class="order-item-name">${item.name}</span>
+                    <span class="order-item-qty">× ${item.quantity}</span>
+                </div>
+            `
+          )
+          .join("");
+
+        const timeStr = formatTime(order.orderTime);
+        const statusLabel = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+
+        div.innerHTML = `
+                <div class="order-header">
+                    <div class="order-id">Order #${order.orderId}</div>
+                    <div class="order-status ${order.status}">${statusLabel}</div>
+                </div>
+                <div class="order-meta">
+                    <span class="order-student">👤 ${order.studentName}</span>
+                    <span class="order-time">⏰ ${timeStr}</span>
+                </div>
+                <div class="order-items">
+                    ${itemsHTML}
+                </div>
+                <div class="order-actions">
+                    ${
+                      order.status === "pending"
+                        ? `
+                        <button class="action-btn btn-ready" onclick="markPreparing(${order.orderId})">Start Preparing</button>
+                        <button class="action-btn btn-cancel" onclick="cancelOrder(${order.orderId})">Cancel</button>
+                    `
+                        : order.status === "preparing"
+                        ? `
+                        <button class="action-btn btn-ready" onclick="markReady(${order.orderId})">Mark Ready</button>
+                        <button class="action-btn btn-cancel" onclick="cancelOrder(${order.orderId})">Cancel</button>
+                    `
+                        : order.status === "ready"
+                        ? `
+                        <button class="action-btn btn-done" onclick="markDone(${order.orderId})">Collected</button>
+                    `
+                        : `
+                        <span style="text-align: center; color: #999; padding: 10px;">✓ Completed</span>
+                    `
+                    }
+                </div>
+            `;
+
+        return div;
+      }
+
+      // Update Order Status
+      function markPreparing(orderId) {
+        const order = orders.find((o) => o.orderId === orderId);
+        if (order) {
+          order.status = "preparing";
+          order.preparedTime = new Date();
+          saveDataToStorage();
+          renderOrders();
+          updateStats();
+          showNotification(`Order #${orderId} - Started Preparing`);
+        }
+      }
+
+      function markReady(orderId) {
+        const order = orders.find((o) => o.orderId === orderId);
+        if (order) {
+          order.status = "ready";
+          order.readyTime = new Date();
+          saveDataToStorage();
+          renderOrders();
+          updateStats();
+          showNotification(`Order #${orderId} - Ready for Pickup`);
+        }
+      }
+
+      function markDone(orderId) {
+        const order = orders.find((o) => o.orderId === orderId);
+        if (order) {
+          order.status = "completed";
+          saveDataToStorage();
+          renderOrders();
+          updateStats();
+          showNotification(`Order #${orderId} - Completed`);
+        }
+      }
+
+      function cancelOrder(orderId) {
+        if (confirm("Are you sure you want to cancel this order?")) {
+          orders = orders.filter((o) => o.orderId !== orderId);
+          saveDataToStorage();
+          renderOrders();
+          updateStats();
+          showNotification(`Order #${orderId} - Cancelled`, "error");
+        }
+      }
+
+      // Render Stock
+      function renderStock() {
+        const stockList = document.getElementById("stockList");
+        stockList.innerHTML = "";
+
+        menuItems.forEach((item) => {
+          const stockCard = createStockCard(item);
+          stockList.appendChild(stockCard);
+        });
+
+        document.getElementById("stockCount").textContent = `${menuItems.length} Items`;
+      }
+
+      // Create Stock Card
+      function createStockCard(item) {
+        const div = document.createElement("div");
+        div.className = `stock-item ${item.finished ? "finished" : ""}`;
+
+        div.innerHTML = `
+                <div class="stock-item-info">
+                    <div class="stock-item-emoji">${item.emoji}</div>
+                    <div class="stock-item-details">
+                        <div class="stock-item-name">${item.name}</div>
+                        <div class="stock-item-category">${item.category}</div>
+                    </div>
+                </div>
+                <div class="stock-info">
+                    <div class="stock-count">
+    <input 
+        type="number" 
+        class="stock-count-number-input" 
+        value="${item.stock}" 
+        min="0"
+        onchange="updateStockCount(${item.id}, this.value)"
+        style="width:60px; text-align:center; font-weight:700; color:#667eea; border:2px solid #667eea; border-radius:6px; padding:4px;"
+    >
+    <div class="stock-count-label">left</div>
+</div>
+                    <div class="stock-toggle">
+                        <input 
+                            type="checkbox" 
+                            class="toggle-checkbox" 
+                            id="toggle-${item.id}"
+                            ${item.finished ? "checked" : ""}
+                            onchange="toggleStockStatus(${item.id})">
+                        <label for="toggle-${item.id}" class="toggle-slider">
+                            <div class="toggle-knob"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-status ${item.finished ? "status-finished" : "status-available"}">
+                        ${item.finished ? "⛔ Finished" : "✓ Available"}
+                    </div>
+                </div>
+            `;
+
+        return div;
+      }
+
+      // Toggle Stock Status
+      function toggleStockStatus(itemId) {
+        const item = menuItems.find((i) => i.id === itemId);
+        if (item) {
+          item.finished = !item.finished;
+          saveDataToStorage();
+          renderStock();
+          const status = item.finished ? "Finished" : "Available";
+          showNotification(`${item.name} marked as ${status}`);
+        }
+      }
+      // Update Stock Count
+      function updateStockCount(itemId, newStock) {
+        const item = menuItems.find((i) => i.id === itemId);
+        if (item) {
+          item.stock = parseInt(newStock);
+          if (item.stock <= 0) item.finished = true;
+          else item.finished = false;
+
+          saveDataToStorage();
+          renderStock();
+          showNotification(`${item.name} stock updated to ${item.stock}`);
+        }
+      }
+
+      // Update Stats
+      function updateStats() {
+        const pending = orders.filter((o) => o.status === "pending").length;
+        const preparing = orders.filter((o) => o.status === "preparing").length;
+        const ready = orders.filter((o) => o.status === "ready").length;
+        const completed = orders.filter((o) => o.status === "completed").length;
+
+        document.getElementById("statPending").textContent = pending;
+        document.getElementById("statPreparing").textContent = preparing;
+        document.getElementById("statReady").textContent = ready;
+        document.getElementById("statCompleted").textContent = completed;
+      }
+
+      // Utility Functions
+      function formatTime(date) {
+        if (!date) return "N/A";
+        // ensure it's a Date object (handles strings from localStorage)
+        if (typeof date === "string") {
+          date = new Date(date);
+        }
+        if (!(date instanceof Date) || isNaN(date.getTime())) return "N/A";
+
+        const now = new Date();
+        const diff = Math.floor((now - date) / 60000); // minutes
+
+        if (diff < 1) return "Just now";
+        if (diff < 60) return `${diff}m ago`;
+        return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+      }
+
+      function showNotification(message, type = "success") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+      }
+
+      // Storage Management
+      function saveDataToStorage() {
+        localStorage.setItem("canteenOrders", JSON.stringify(orders));
+        localStorage.setItem("canteenMenuItems", JSON.stringify(menuItems));
+      }
+
+      function loadDataFromStorage() {
+        const savedOrders = localStorage.getItem("canteenOrders");
+        const savedItems = localStorage.getItem("canteenMenuItems");
+
+        if (savedOrders) orders = JSON.parse(savedOrders);
+        if (savedItems) menuItems = JSON.parse(savedItems);
+      }
+
+      // Logout
+      function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          sessionStorage.removeItem("currentUser");
+          localStorage.removeItem("canteenUser");
+          window.location.href = "./login-page.html";
+        }
+      }
+
+      // Auto-refresh data every 10 seconds
+      setInterval(() => {
+        loadDataFromStorage();
+        renderOrders();
+        renderStock();
+        updateStats();
+      }, 10000);
+
+      // Initialize
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
